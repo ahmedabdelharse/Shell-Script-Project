@@ -1,5 +1,13 @@
 #!/bin/bash
 
+echo "Starting Database Management System ..." #improve readability
+	sleep 0.2
+if [[ -d "./dbs" ]]; then #check if dbs dir exist 
+		echo "reading dbs ..."  #read dbs dir
+	else
+		echo "There is no Databases Directory, Creating dbs Directory ..." #crating dbs dir if not existing 
+		mkdir ./dbs
+	fi
 #Main menu functions 
 create_db(){
 echo "Creating Database"
@@ -8,10 +16,11 @@ do
 read -p "Enter Database name: " INPUT
 #for db in `ls -d ./dbs/`
 #do 
-if [[ `ls ./dbs/$INPUT` ]]; then 
+if [[ -d "./dbs/$INPUT" ]]; then 
 	echo "Database name already existes please choose another name"
 	continue
 else
+	mkdir ./dbs/$INPUT
 	echo "Database $INPUT is Created succesfully :) "
 fi
 #done
@@ -45,18 +54,9 @@ do
 	#	echo ""
 	#	mkdir ./dbs
 	#fi
-	
-	if [[ `ls ./dbs` ]]; then 
-		echo " reading dbs " 
-		break
-	elif [[ ! `ls ./dbs` ]]; then
-		echo "There is no Databases Directory, Creating dbs Directory ..."
-		sleep 0.2
-		mkdir ./dbs
-	fi
 	#done
 	
-	echo "Starting Database Management System ..."
+	
 	sleep 0.5 #delaying start for readability
 	read -p "Select your operation from Menu: (1-4), q -> exit 
 		1- Create Database
