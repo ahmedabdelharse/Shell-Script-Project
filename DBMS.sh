@@ -2,18 +2,20 @@
 
 echo "Starting Database Management System ..." #improve readability
 	sleep 0.2
+	
 if [[ -d "./dbs" ]]; then #check if dbs dir exist 
 		echo "reading dbs ..."  #read dbs dir
 	else
 		echo "There is no Databases Directory, Creating dbs Directory ..." #crating dbs dir if not existing 
 		mkdir ./dbs
 	fi
+	
 #Main menu functions 
 create_db(){
 echo "Creating Database"
 while : 
 do
-read -p "Enter Database name: " INPUT
+read -p "Enter Database name: " INPUT #reading dbs dir, need modiying to filter input if valid or not etc 
 #for db in `ls -d ./dbs/`
 #do 
 if [[ -d "./dbs/$INPUT" ]]; then 
@@ -21,7 +23,9 @@ if [[ -d "./dbs/$INPUT" ]]; then
 	continue
 else
 	mkdir ./dbs/$INPUT
-	echo "Database $INPUT is Created succesfully :) "
+	echo "Database $INPUT is Created succesfully :)" 
+	echo
+	break
 fi
 #done
 
@@ -31,7 +35,11 @@ done
 
 }
 list_db(){
-echo "You Choosed List DB"
+echo "Listing DB ..."
+sleep 0.1
+echo "Database available is :"
+ls "./dbs/"
+echo #add clear line for readability
 }
 connect_to_db(){
 echo "You Choosed Connect to DB"
