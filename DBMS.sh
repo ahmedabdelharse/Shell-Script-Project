@@ -15,10 +15,14 @@ create_db(){
 echo "Creating Database"
 while : 
 do
-read -p "Enter Database name: " INPUT #reading dbs dir, need modiying to filter input if valid or not etc 
+read -p "Enter Database name (enter back to exit): " INPUT #reading dbs dir, need modiying to filter input if valid or not etc 
 #for db in `ls -d ./dbs/`
 #do 
-if [[ -d "./dbs/$INPUT" ]]; then 
+if [[ "$INPUT" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break
+elif [[ -d "./dbs/$INPUT" ]]; then 
 	echo "Database name already existes please choose another name"
 	continue
 else
@@ -43,6 +47,11 @@ echo #add clear line for readability
 }
 connect_to_db(){
 echo "You Choosed Connect to DB"
+echo "Database available is :"
+ls "./dbs/"
+echo #add clear line for readability
+
+
 }
 drop_db(){
 echo "You Choosed Drop DB"
