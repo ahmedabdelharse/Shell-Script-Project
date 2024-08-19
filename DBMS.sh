@@ -1,4 +1,18 @@
-#! /bin/bash
+#!/bin/bash
+
+#Main menu functions 
+create_db(){
+echo "You Choosed Create DB"
+}
+list_db(){
+echo "You Choosed List DB"
+}
+connect_to_db(){
+echo "You Choosed Connect to DB"
+}
+drop_db(){
+echo "You Choosed Drop DB"
+}
 
 #reading user input 
 while :
@@ -15,13 +29,13 @@ do
 	echo "" #empty line for visual
 	sleep 0.2 #delaying output for readability
 	case $INPUT in 
-		"1") echo "You Choosed Create DB"
+		"1") create_db
 		;;
-		"2") echo "You Choosed List DB"
+		"2") list_db
 		;;
-		"3") echo "You Choosed Connect to DB"
+		"3") connect_to_db
 		;;
-		"4") echo "You Choosed Drop DB"
+		"4") drop_db
 		;;
 		"q"|"exit") echo "Exiting" 
 		break
@@ -30,3 +44,5 @@ do
 		;;
 	esac
 done
+
+
