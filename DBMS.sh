@@ -2,7 +2,8 @@
 
 #Main menu functions 
 create_db(){
-echo "You Choosed Create DB"
+echo "Creating Database"
+read -p "Enter Database name: " INPUT
 }
 list_db(){
 echo "You Choosed List DB"
