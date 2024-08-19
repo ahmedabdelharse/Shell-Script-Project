@@ -3,7 +3,23 @@
 #Main menu functions 
 create_db(){
 echo "Creating Database"
+while : 
+do
 read -p "Enter Database name: " INPUT
+#for db in `ls -d ./dbs/`
+#do 
+if [[ `ls ./dbs/$INPUT` ]]; then 
+	echo "Database name already existes please choose another name"
+	continue
+else
+	echo "Database $INPUT is Created succesfully :) "
+fi
+#done
+
+done
+#ls -d ./dbs/$INPUT 2>/dev/null||mkdir yourdir  
+#mkdir /dbs/$INPUT
+
 }
 list_db(){
 echo "You Choosed List DB"
@@ -18,8 +34,30 @@ echo "You Choosed Drop DB"
 #reading user input 
 while :
 do 
+	#checking for databases (dbs) dir is available or create dbs directory
+	#ls yourdir 2>/dev/null||mkdir yourdir -> unused another way to create 
+	
+	#for dirs in `ls -d .`	
+	#do 
+	#if [[ "$dirs" == "dbs" ]]; then 
+	#	break
+	#	else
+	#	echo ""
+	#	mkdir ./dbs
+	#fi
+	
+	if [[ `ls ./dbs` ]]; then 
+		echo " reading dbs " 
+		break
+	elif [[ ! `ls ./dbs` ]]; then
+		echo "There is no Databases Directory, Creating dbs Directory ..."
+		sleep 0.2
+		mkdir ./dbs
+	fi
+	#done
+	
+	echo "Starting Database Management System ..."
 	sleep 0.5 #delaying start for readability
-	echo ""
 	read -p "Select your operation from Menu: (1-4), q -> exit 
 		1- Create Database
 		2- List Database
