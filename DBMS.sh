@@ -41,16 +41,31 @@ done
 list_db(){
 echo "Listing DB ..."
 sleep 0.1
-echo "Database available is :"
+echo "Databases available are :"
 ls "./dbs/"
 echo #add clear line for readability
 }
 connect_to_db(){
 echo "You Choosed Connect to DB"
-echo "Database available is :"
+echo "Databases available are :"
 ls "./dbs/"
 echo #add clear line for readability
-
+while : 
+do
+read -p "Enter Database name to select (enter back to exit): " INPUT #reading dbs dir, need modiying to filter input if valid or not etc 
+if [[ "$INPUT" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break
+elif [[ -d "./dbs/$INPUT" ]]; then 
+	echo "Selecting Database : $INPUT"
+	#viewing/selecting fun ($$$ to do next $$$)
+else
+	echo "Please Enter a valid Database name" 
+	echo
+	continue
+fi
+done
 
 }
 drop_db(){
