@@ -58,8 +58,45 @@ if [[ "$INPUT" = "back" ]]; then
 	sleep 0.1
 	break
 elif [[ -d "./dbs/$INPUT" ]]; then 
-	echo "Selecting Database : $INPUT"
-	#viewing/selecting fun ($$$ to do next $$$)
+	while : #to do - add back for exit option
+	do 
+	sleep 0.2 #delaying start for readability
+	read -p "Selected Database : $INPUT, Choose your Operation.  
+		1- Create Table
+		2- List Tables
+		3- Drop Table 
+		4- Insert into Table
+		5- Select from Table
+		6- Delete from Table
+		7- Update Table 
+		
+	Operation : " OP
+	echo "" #empty line for visual
+	sleep 0.2 #delaying output for readability
+	case $OP in 
+		#&&& to do next $$$$$$$$ ->>
+		"1") echo "create_table" 
+		;;
+		"2") echo "list_table"
+		;;
+		"3") echo "drop_table" #regular bash
+		;;
+		"4") echo "insert_into_table" #awk-sed use begins 
+		;;
+		"5") echo "select_from_table" #awk-sed use begins 
+		;;
+		"6") echo "delete_from_table" #awk-sed use begins 
+		;;
+		"7") echo "update_table" #awk-sed use begins 
+		;;
+		"back") echo "Exiting to List Database Menu" 
+		break 
+		;;
+		*) echo "Please Enter Valid Input (1-7)"
+		continue
+		;;
+	esac
+	done
 else
 	echo "Please Enter a valid Database name" 
 	echo
