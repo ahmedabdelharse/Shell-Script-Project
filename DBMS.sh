@@ -9,13 +9,49 @@ if [[ -d "./dbs" ]]; then #check if dbs dir exist
 		echo "There is no Databases Directory, Creating dbs Directory ..." #crating dbs dir if not existing 
 		mkdir ./dbs
 	fi
-	
+
+#Connect_to_db functions ***@ current working point @***
+create_table(){ # <-- coding here 
+echo "Creating Table"
+db_path=$1  #selected db -> db dir (./dbs/$db_path)
+while : 
+do
+read -p "Enter Num of Fields (enter back to exit): " NUMOFF #reading num of fileds integer filtered 
+
+if [[ "$NUMOFF" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break
+elif ! [[ $NUMOFF =~ ^[0-9]+$ && $NUMOFF -gt 0 ]] ; then #add explaination 
+	echo "error: Please Enter Numbers only (can't be zero)" 
+	continue #done to here
+else 
+	NUMOFF=$(expr $NUMOFF + 0 ) #expr is to evalute NUMOFF -> filters preceding zero digits
+	echo "Creating Table with $NUMOFF Fields"
+	for fnum in `seq 1 $NUMOFF`
+	do
+		read -p "Enter Feild Name : " fname  #feild name
+		echo 
+		
+
+		read -p "Select Feild Type (1- String, 2- Integer) :" ftype #feild type
+		echo
+
+	done
+	break
+fi	
+done
+}
+
+
+
 #Main menu functions 
 create_db(){
 echo "Creating Database"
 while : 
 do
-read -p "Enter Database name (enter back to exit): " INPUT #reading dbs dir, need modiying to filter input if valid or not etc 
+read -p "Enter Database name (enter back to exit): " INPUT #reading dbs dir
+#to do - need to add filter to ensure INOUT is string if wanted
 #for db in `ls -d ./dbs/`
 #do 
 if [[ "$INPUT" = "back" ]]; then 
@@ -31,9 +67,8 @@ else
 	echo
 	break
 fi
-#done
-
 done
+#done
 #ls -d ./dbs/$INPUT 2>/dev/null||mkdir yourdir  
 #mkdir /dbs/$INPUT
 
@@ -74,8 +109,8 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 	echo "" #empty line for visual
 	sleep 0.2 #delaying output for readability
 	case $OP in 
-		#&&& to do next $$$$$$$$ ->>
-		"1") echo "create_table" 
+		#&&& to do next $$$$$$$$ 
+		"1") create_table $INPUT #--> i'm here
 		;;
 		"2") echo "list_table"
 		;;
