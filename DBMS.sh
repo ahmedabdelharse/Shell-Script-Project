@@ -11,9 +11,9 @@ if [[ -d "./dbs" ]]; then #check if dbs dir exist
 	fi
 
 #Connect_to_db functions ***@ current working point @***
-create_table(){ # <-- coding here 
+create_table(){ 
 echo "Creating Table"
-db_path=$1  #selected db -> db dir (./dbs/$db_path)
+db_path=$1 #$1 is db dir/name  #selected db -> db dir (./dbs/$db_path)
 while : 
 do
 read -p "Enter Num of Fields (enter back to exit): " NUMOFF #reading num of fileds integer filtered 
@@ -32,10 +32,10 @@ else
 	do
 		read -p "Enter Feild Name : " fname  #feild name
 		echo 
-		
-
 		read -p "Select Feild Type (1- String, 2- Integer) :" ftype #feild type
 		echo
+		#Entering data to file 
+		#echo -n "this is the text" >> db_table.txt # <-- coding here 
 
 	done
 	break
