@@ -14,9 +14,31 @@ if [[ -d "./dbs" ]]; then #check if dbs dir exist
 create_table(){ 
 echo "Creating Table"
 db_path=$1 #$1 is db dir/name  #selected db -> db dir (./dbs/$db_path)
+#Reading table name 
 while : 
 do
-read -p "Enter Num of Fields (enter back to exit): " NUMOFF #reading num of fileds integer filtered 
+read -p "Enter Table name (enter back to exit): " tname #reading .dbs/$db_path/tname
+if [[ "$tname" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break #not yet tested
+elif [[ -f "./dbs/$db_path/$tname.txt" ]]; then 
+	echo "Table already existes please Enter another Table name"
+	echo "Available Tables are :" #can be removed for security if wanted
+	ls ./dbs/$db_path/ 	#can be removed for security if wanted
+	echo
+	continue
+else
+	touch ./dbs/$db_path/$tname.txt
+	echo "Table $tname is Created succesfully :)" 
+	echo
+	break
+fi
+done
+
+while : #main while loop
+do
+read -p "Enter Num of Fields/Columns (enter back to exit): " NUMOFF #reading num of fileds integer filtered 
 
 if [[ "$NUMOFF" = "back" ]]; then 
 	echo "Back to Main Menu .. "
@@ -24,21 +46,45 @@ if [[ "$NUMOFF" = "back" ]]; then
 	break
 elif ! [[ $NUMOFF =~ ^[0-9]+$ && $NUMOFF -gt 0 ]] ; then #add explaination 
 	echo "error: Please Enter Numbers only (can't be zero)" 
-	continue #done to here
+	continue #not yet tested
 else 
 	NUMOFF=$(expr $NUMOFF + 0 ) #expr is to evalute NUMOFF -> filters preceding zero digits
-	echo "Creating Table with $NUMOFF Fields"
+	echo "Creating Table with $NUMOFF Fields/Columns"
+	#added earlier -> touch ./dbs/$db_path/db_table.txt #creating table file - presist in all code
+	#NUMOFF in file maybe can be removed if awk-sed can handle num of fields
+	#removed -> echo "$NUMOFF" > ./dbs/$db_path/$tname.txt #marking num of feilds at first line 
 	for fnum in `seq 1 $NUMOFF`
 	do
-		read -p "Enter Feild Name : " fname  #feild name
-		echo 
-		read -p "Select Feild Type (1- String, 2- Integer) :" ftype #feild type
-		echo
+		while : #to ensure fname,ftype entered correctly
+		do
+			read -p "Enter Feild $fnum Name : " fname  #feild name
+			if [[ $fname =~ ^[0-9]+$ ]]; then #not tested yet - test for space and 0 and numbers
+				echo "error: Please Enter String only (can't be number)" 
+				continue #not yet tested
+			else
+				while :
+				do
+				read -p "Select Feild : $fnum Type (1- String, 2- Integer) :" ftype #feild type
+				echo
+				if [[ $ftype == 1 ]]; then #string type
+					echo -n "$fname(s)		" >> ./dbs/$db_path/$tname.txt
+				elif [[ $ftype == 2 ]]; then #integer type
+					echo -n "$fname(i)		" >> ./dbs/$db_path/$tname.txt
+				else
+					echo " error: Please Enter either 1 or 2" 
+				continue
+				fi
+				break #break to outer while loop
+				done
+			fi
+			echo
+			break #breaks/goes to next iteration
+		done 
 		#Entering data to file 
 		#echo -n "this is the text" >> db_table.txt # <-- coding here 
-
 	done
-	break
+	echo "" >> ./dbs/$db_path/$tname.txt #replaces /n -> add new line after fname, ftype
+	break #done entering fname, ftype -> exiting main while loop
 fi	
 done
 }
