@@ -80,8 +80,6 @@ else
 			echo
 			break #breaks/goes to next iteration
 		done 
-		#Entering data to file 
-		#echo -n "this is the text" >> db_table.txt # <-- coding here 
 	done
 	echo "" >> ./dbs/$db_path/$tname.txt #replaces /n -> add new line after fname, ftype
 	break #done entering fname, ftype -> exiting main while loop
@@ -158,7 +156,9 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 		#&&& to do next $$$$$$$$ 
 		"1") create_table $INPUT #--> i'm here
 		;;
-		"2") echo "list_table"
+		"2")echo "Available Tables are : "
+			ls "./dbs/$INPUT"
+			echo
 		;;
 		"3") echo "drop_table" #regular bash
 		;;
