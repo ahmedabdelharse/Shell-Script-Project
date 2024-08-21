@@ -87,9 +87,33 @@ fi
 done
 }
 
+drop_table(){
+db_path=$1	
+#Reading table name 
+while : 
+do
+read -p "Enter Table name with no extension (enter back to exit): " tname #reading table-name
+# to do -> rethink about tname with or without extension 
+if [[ "$tname" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break #not yet tested
+elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then 
+	echo "Table doesn't exist please Enter another Table name"
+	echo "Available Tables are :" #can be removed for security if wanted
+	ls ./dbs/$db_path/ 	#can be removed for security if wanted
+	echo
+	continue
+else
+	rm  ./dbs/$db_path/$tname.txt #to do -> add confirmation message
+	echo "Table $tname is Deleted succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
+	echo
+	break
+fi
+done
+}
 
-
-#Main menu functions 
+###@@@@ Main menu functions @@@@### 
 create_db(){
 echo "Creating Database"
 while : 
@@ -156,11 +180,11 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 		#&&& to do next $$$$$$$$ 
 		"1") create_table $INPUT #--> i'm here
 		;;
-		"2")echo "Available Tables are : "
-			ls "./dbs/$INPUT"
-			echo
+		"2") echo "Available Tables are : "
+			 ls "./dbs/$INPUT"
+			 echo
 		;;
-		"3") echo "drop_table" #regular bash
+		"3") drop_table $INPUT #regular bash
 		;;
 		"4") echo "insert_into_table" #awk-sed use begins 
 		;;
