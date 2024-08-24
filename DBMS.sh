@@ -53,6 +53,11 @@ else
 	#added earlier -> touch ./dbs/$db_path/db_table.txt #creating table file - presist in all code
 	#NUMOFF in file maybe can be removed if awk-sed can handle num of fields
 	#removed -> echo "$NUMOFF" > ./dbs/$db_path/$tname.txt #marking num of feilds at first line 
+		#foo="Hello"
+		#foo="${foo} World"
+		#echo "${foo}"
+		#> Hello World
+	tmpstr="" #temp string
 	for fnum in `seq 1 $NUMOFF`
 	do
 		while : #to ensure fname,ftype entered correctly
@@ -64,12 +69,15 @@ else
 			else
 				while :
 				do
+				#to do -> edit 1,2 to be s,i
 				read -p "Select Feild : $fnum Type (1- String, 2- Integer) :" ftype #feild type
 				echo
 				if [[ $ftype == 1 ]]; then #string type
-					echo -n "$fname(s)		" >> ./dbs/$db_path/$tname.txt
+					tmpstr="$tmpstr $fname:s"
+					#echo -n "$fname(s)-" >> ./dbs/$db_path/$tname.txt
 				elif [[ $ftype == 2 ]]; then #integer type
-					echo -n "$fname(i)		" >> ./dbs/$db_path/$tname.txt
+					tmpstr="$tmpstr $fname:i"
+					#echo -n "$fname(i)-" >> ./dbs/$db_path/$tname.txt
 				else
 					echo " error: Please Enter either 1 or 2" 
 				continue
@@ -81,7 +89,7 @@ else
 			break #breaks/goes to next iteration
 		done 
 	done
-	echo "" >> ./dbs/$db_path/$tname.txt #replaces /n -> add new line after fname, ftype
+	echo "$tmpstr" >> ./dbs/$db_path/$tname.txt #replaces /n -> add new line after fname, ftype
 	break #done entering fname, ftype -> exiting main while loop
 fi	
 done
@@ -111,6 +119,84 @@ else
 	break
 fi
 done
+}
+
+insert_into_table(){
+db_path=$1	
+#Reading table name 
+while : 
+do
+read -p "Enter Table name with no extension (enter back to exit): " tname #reading table-name
+# to do -> rethink about tname with or without extension 
+if [[ "$tname" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break #not yet tested
+elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then 
+	echo "Table doesn't exist please Enter another Table name"
+	echo "Available Tables are :" #can be removed for security if wanted
+	ls ./dbs/$db_path/ 	#can be removed for security if wanted
+	echo
+	continue
+else
+	################ 
+	tmpstr="" #temp string
+	awk 'NR == 1  {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt > temp.txt #print 1st line fields into lines and store it in file 
+	
+	numofl=`sed -n -E '/[a-z].+:[is]$/p' str1 | wc -l` #count num of lines in temp to use for loop 
+	for i in `seq 1 $numofl`
+	do
+		if [[ `sed -n '1p' str1 | awk -F":" '{print $2}'` == "i" ]];then #if integer
+			# Was used for debugging
+			#echo " Line -->  `sed -n '1p' str1 `" 
+			#echo " Last character is `sed -n '1p' str1 | awk -F":" '{print $2}'`"
+			#echo " Line $i is: Integer"
+			
+			while :
+			do 
+			read -p "Please Enter `sed -n '1p' str1 | awk -F":" '{print $1}'` (must be number): " value
+			if ! [[ $value =~ ^[0-9]+$ ]]; then
+				echo "wrong type, Please Enter Numbers only"
+				continue
+			else
+				
+				#tmpstr="$tmpstr $fname:s"
+
+				
+
+
+			done
+
+
+		
+		elif [[ `sed -n '1p' str1 | awk -F":" '{print $2}'` == "s" ]];then
+			#echo " Line -->  `sed -n '1p' str1 `" 
+			#echo " Last character is `sed -n '1p' str1 | awk -F":" '{print $2}'`"
+			#echo " Line $i is: String"
+
+		
+		else
+			#echo " Line -->  `sed -n '1p' str1 `" 
+			#echo " Last character is `sed -n '1p' str1 | awk -F":" '{print $2}'`"
+			#echo " Line $i is: niether"
+			echo "Error in table fileds "
+			break
+		fi
+		echo
+		sed -i '1d' str1
+	done
+	echo "$tmpstr" >> ./dbs/$db_path/$tname.txt
+	rm str1
+
+	
+	
+	#echo "Table $tname is succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
+	echo
+	break
+fi
+done
+
+
 }
 
 ###@@@@ Main menu functions @@@@### 
@@ -186,7 +272,7 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 		;;
 		"3") drop_table $INPUT #regular bash
 		;;
-		"4") echo "insert_into_table" #awk-sed use begins 
+		"4") insert_into_table $INPUT #awk-sed use begins 
 		;;
 		"5") echo "select_from_table" #awk-sed use begins 
 		;;
