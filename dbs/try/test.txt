@@ -1,0 +1,4 @@
+ id:i name:s salary:i gid:i
+
+ 1 2 200 22
+ 2 20 100 223

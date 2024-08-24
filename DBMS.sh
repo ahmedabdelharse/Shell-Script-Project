@@ -141,12 +141,12 @@ elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then
 else
 	################ 
 	tmpstr="" #temp string
-	awk 'NR == 1  {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt > temp.txt #print 1st line fields into lines and store it in file 
+	awk 'NR == 1  {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt > ./dbs/$db_path/temp.txt #print 1st line fields into lines and store it in file 
 	
-	numofl=`sed -n -E '/[a-z].+:[is]$/p' str1 | wc -l` #count num of lines in temp to use for loop 
+	numofl=`sed -n -E '/[a-z].+:[is]$/p' ./dbs/$db_path/temp.txt | wc -l` #count num of lines in temp to use for loop 
 	for i in `seq 1 $numofl`
 	do
-		if [[ `sed -n '1p' str1 | awk -F":" '{print $2}'` == "i" ]];then #if integer
+		if [[ `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $2}'` == "i" ]];then #if integer
 			# Was used for debugging
 			#echo " Line -->  `sed -n '1p' str1 `" 
 			#echo " Last character is `sed -n '1p' str1 | awk -F":" '{print $2}'`"
@@ -154,26 +154,32 @@ else
 			
 			while :
 			do 
-			read -p "Please Enter `sed -n '1p' str1 | awk -F":" '{print $1}'` (must be number): " value
+			read -p "Please Enter `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $1}'` (must be number): " value
 			if ! [[ $value =~ ^[0-9]+$ ]]; then
 				echo "wrong type, Please Enter Numbers only"
 				continue
 			else
-				
-				#tmpstr="$tmpstr $fname:s"
-
-				
-
-
+				tmpstr="$tmpstr $value"
+				break
+			fi	
 			done
 
-
-		
-		elif [[ `sed -n '1p' str1 | awk -F":" '{print $2}'` == "s" ]];then
+		elif [[ `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $2}'` == "s" ]];then
 			#echo " Line -->  `sed -n '1p' str1 `" 
 			#echo " Last character is `sed -n '1p' str1 | awk -F":" '{print $2}'`"
 			#echo " Line $i is: String"
 
+			while :
+			do 
+			read -p "Please Enter `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $1}'` (must be String not number): " value
+			if [[ $value =~ ^[0-9]+$ ]]; then
+				echo "wrong type, Please Enter Numbers only"
+				continue
+			else
+				tmpstr="$tmpstr $value"
+				break
+			fi
+			done
 		
 		else
 			#echo " Line -->  `sed -n '1p' str1 `" 
@@ -182,21 +188,15 @@ else
 			echo "Error in table fileds "
 			break
 		fi
-		echo
-		sed -i '1d' str1
+		sed -i '1d' ./dbs/$db_path/temp.txt
 	done
 	echo "$tmpstr" >> ./dbs/$db_path/$tname.txt
-	rm str1
-
-	
-	
+	rm ./dbs/$db_path/temp.txt
 	#echo "Table $tname is succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
 	echo
 	break
 fi
 done
-
-
 }
 
 ###@@@@ Main menu functions @@@@### 
