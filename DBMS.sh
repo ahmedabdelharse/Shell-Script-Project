@@ -140,6 +140,9 @@ elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then
 	continue
 else
 	################ 
+	cont="y"
+	while [ $cont == "y" ]; #loop to continue adding enteries
+	do
 	tmpstr="" #temp string
 	awk 'NR == 1  {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt > ./dbs/$db_path/temp.txt #print 1st line fields into lines and store it in file 
 	
@@ -189,9 +192,25 @@ else
 			break
 		fi
 		sed -i '1d' ./dbs/$db_path/temp.txt
-	done
+	done #for loop
 	echo "$tmpstr" >> ./dbs/$db_path/$tname.txt
+	# column -t -s' ' ./dbs/$db_path/$tname.txt
 	rm ./dbs/$db_path/temp.txt
+	while :
+	do
+	read -p "Do you want to add another Entery ? (y, n): " cont
+	if [[ $cont == "y" ]];then
+	echo "Adding Another Entery to table: $tname.txt"
+	break
+	elif [[ $cont == "n" ]];then
+	echo "Exiting insert into table and going back to menu ... "
+	break
+	else 
+	echo "wrong input, please enter y to continue, n to exit "
+	continue
+	fi
+	done
+	done #while loop 
 	#echo "Table $tname is succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
 	echo
 	break
@@ -236,11 +255,12 @@ echo #add clear line for readability
 }
 connect_to_db(){
 echo "You Choosed Connect to DB"
-echo "Databases available are :"
-ls "./dbs/"
 echo #add clear line for readability
 while : 
 do
+echo "Databases available are :"
+ls "./dbs/"
+echo
 read -p "Enter Database name to select (enter back to exit): " INPUT #reading dbs dir, need modiying to filter input if valid or not etc 
 if [[ "$INPUT" = "back" ]]; then 
 	echo "Back to Main Menu .. "
@@ -250,7 +270,8 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 	while : #to do - add back for exit option
 	do 
 	sleep 0.2 #delaying start for readability
-	read -p "Selected Database : $INPUT, Choose your Operation.  
+	read -p "Selected Database is: $INPUT, Choose your Operation.
+	(enter "back" to exit)  
 		1- Create Table
 		2- List Tables
 		3- Drop Table 
