@@ -218,6 +218,110 @@ fi
 done
 }
 
+select_from_table(){
+db_path=$1	
+#Reading table name 
+echo "Selecting from table ... "
+while : 
+do
+read -p "Enter Table name with no extension (enter back to exit): " tname #reading table-name
+# to do -> rethink about tname with or without extension 
+if [[ "$tname" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break #not yet tested
+elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then 
+	echo "Table doesn't exist please Enter another Table name"
+	echo "Available Tables are :" #can be removed for security if wanted
+	ls ./dbs/$db_path/ 	#can be removed for security if wanted
+	echo
+	continue
+else
+	################ Continue from here *
+	cont="y"
+	while [ $cont == "y" ]; #loop to continue viewing enteries
+	do
+	#tmpstr="" #temp string
+	read -p "Choose Select Method (enter 1,2,3): 
+	  1-All Table   2-by Row   3-by Search ->  " smthd
+	if [[ $smthd == 1 ]]; then
+		awk '{print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/temp.txt
+
+		column -t -s' ' ./dbs/$db_path/temp.txt
+		rm ./dbs/$db_path/temp.txt
+	elif [[ $smthd == 2 ]]; then
+		while :
+		do
+		read -p "Enter Row number " rnum
+		if [[ $rnum =~ ^[0-9]+$ ]];then
+			awk 'NR == 1 {print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/temp.txt
+			rnum=$(($rnum+2))
+			awk 'NR == '$rnum' {print}' ./dbs/$db_path/$tname.txt >> ./dbs/$db_path/temp.txt
+			column -t -s' ' ./dbs/$db_path/temp.txt
+			rm ./dbs/$db_path/temp.txt
+			break
+		else
+			echo "wrong input, please enter number only"
+			continue
+		fi
+		done
+	elif [[ $smthd == 3 ]]; then
+		echo "Table Columns are : "
+		awk 'NR == 1 {print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g'
+		awk 'NR == 1 {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/cl_list.txt
+		echo
+		while : 
+		do
+		read -p "Enter Your search column " scl
+
+		#ls | grep servername$
+
+		if [[ `awk '/^'$scl'$/' ./dbs/$db_path/cl_list.txt` ]];then #if column is present or not
+			cl_num=`wc -l < ./dbs/$db_path/cl_list.txt`
+			for i in `seq 1 $cl_num`
+			do
+			if [[ $scl == `awk 'NR == '$i' {print}' ./dbs/$db_path/cl_list.txt` ]]; then
+				read -p "Search Cloumn: $scl  for value ->  " sval
+				awk 'NR ==1 {print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/temp.txt
+				awk '{if($'$i' == "'$sval'") print $0}' ./dbs/$db_path/$tname.txt >> ./dbs/$db_path/temp.txt
+				column -t -s' ' ./dbs/$db_path/temp.txt
+				rm ./dbs/$db_path/temp.txt
+				break
+			fi
+			done	
+		else
+			echo "NO column with value: $scl"
+		fi
+		break
+		done #while
+		rm ./dbs/$db_path/cl_list.txt
+	else 
+	echo "wrong input, please enter of numbers {1,2,3}"
+	continue
+	fi
+	
+	while :
+	do
+	read -p "Do you want to search for another Entery ? (y, n): " cont
+	if [[ $cont == "y" ]];then
+	#echo "Adding Another Entery to table: $tname.txt"
+	break
+	elif [[ $cont == "n" ]];then
+	#echo "Exiting insert into table and going back to menu ... "
+	break
+	else 
+	echo "wrong input, please enter y to continue, n to exit "
+	continue
+	fi
+	done
+	done #while loop 
+	#echo "Table $tname is succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
+	echo
+	break
+fi
+done
+}
+
 ###@@@@ Main menu functions @@@@### 
 create_db(){
 echo "Creating Database"
@@ -295,7 +399,7 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 		;;
 		"4") insert_into_table $INPUT #awk-sed use begins 
 		;;
-		"5") echo "select_from_table" #awk-sed use begins 
+		"5") select_from_table $INPUT #awk-sed use begins 
 		;;
 		"6") echo "delete_from_table" #awk-sed use begins 
 		;;
