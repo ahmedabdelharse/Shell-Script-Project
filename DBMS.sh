@@ -604,7 +604,27 @@ done
 
 }
 drop_db(){
-echo "You Choosed Drop DB"
+echo "Drop Database .."
+while : 
+do
+echo "Available Databases are:  "
+ls "./dbs/"
+echo
+read -p "Enter Database name to drop (enter back to exit): " INPUT #reading dbs dir
+if [[ "$INPUT" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break
+elif [[ -d "./dbs/$INPUT" ]]; then 
+	rm -r ./dbs/$INPUT
+	echo "Database: $INPUT is Dropped"
+	break
+else
+	echo "Database name not correct"
+	echo
+	continue
+fi
+done
 }
 
 #reading user input 

@@ -1,9 +1,0 @@
- id:i name:s salary:i gid:i
-
- 1 2 200 22
- 2 20 100 223
- 1 ahmed 222 353
- 4 nermin 300 34
- 5 ali 3200 3
- 8 karim 2900 13
- 9 asmaa 900 12
