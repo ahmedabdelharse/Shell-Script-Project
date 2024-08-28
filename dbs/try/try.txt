@@ -1,2 +1,1 @@
  id:i name:s salary:i
- 2 asd 123

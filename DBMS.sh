@@ -372,28 +372,129 @@ else
 		echo "wrong input, please enter number only"
 		continue
 	fi
-	done
 	
-	while :
-	do
-	read -p "Do you want to delete another Entery ? (y, n): " cont
-	if [[ $cont == "y" ]];then
-	#echo "Adding Another Entery to table: $tname.txt"
-	break
-	elif [[ $cont == "n" ]];then
-	#echo "Exiting insert into table and going back to menu ... "
-	break
-	else 
-	echo "wrong input, please enter y to continue, n to exit "
-	continue
-	fi
-	done #while loop 
+	
+		while :
+		do
+		read -p "Do you still want to delete from table ? (y, n): " cont
+		if [[ $cont == "y" ]];then
+			#echo "Adding Another Entery to table: $tname.txt"
+		break
+		elif [[ $cont == "n" ]];then
+			#echo "Exiting insert into table and going back to menu ... "
+		break
+		else 
+			echo "wrong input, please enter y to continue, n to exit "
+			continue
+		fi
+		done #while loop 
+	done
 	#echo "Table $tname is succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
 	echo
 	#break
 fi
 done
 }
+
+update_table(){
+db_path=$1
+#Reading table name 
+echo "Updating Table ... "
+while :
+do
+read -p "Enter Table name with no extension (enter back to exit): " tname #reading table-name
+# to do -> rethink about tname with or without extension 
+if [[ "$tname" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break #not yet tested
+elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then 
+	echo "Table doesn't exist please Enter another Table name"
+	echo "Available Tables are :" #can be removed for security if wanted
+	ls ./dbs/$db_path/ 	#can be removed for security if wanted
+	echo
+	continue
+else
+	cont="y"
+	while [ $cont == "y" ]; #loop to continue updating table loop
+	do
+	read -p "Enter Row number to update (enter "view" to view all Table Rows) ->  " unum
+	if [[ $unum == "view" ]]; then
+		echo "Line ->  Table "
+		awk 'NR == 1 {print "   ", $0}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' | column -t -s' '
+		sed -e '1d' ./dbs/$db_path/$tname.txt | awk '{print NR," ->", $0}' | column -t -s' '
+		echo
+	elif  [[ $unum =~ ^[0-9]+$ ]]; then #fix deleting empty lines	
+		unum=$(($unum+1))
+		tmpstr="" #temp string
+		awk 'NR == 1  {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt > ./dbs/$db_path/temp.txt #print 1st line fields into lines and store it in file 
+	
+		numofl=`sed -n -E '/[a-z].+:[is]$/p' ./dbs/$db_path/temp.txt | wc -l` #count num of lines in temp to use for loop 
+		for i in `seq 1 $numofl`
+		do
+		if [[ `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $2}'` == "i" ]];then #if integer
+					
+			while :
+			do 
+			read -p "Please Enter `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $1}'` (must be number): " value
+			if ! [[ $value =~ ^[0-9]+$ ]]; then
+				echo "wrong type, Please Enter Numbers only"
+				continue
+			else
+				tmpstr="$tmpstr $value"
+			break
+			fi	
+			done
+		elif [[ `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $2}'` == "s" ]];then
+			while :
+			do 
+			read -p "Please Enter `sed -n '1p' ./dbs/$db_path/temp.txt | awk -F":" '{print $1}'` (must be String not number): " value
+			if [[ $value =~ ^[0-9]+$ ]]; then
+				echo "wrong type, Please Enter Numbers only"
+			continue
+			else
+				tmpstr="$tmpstr $value"
+			break
+			fi
+			done
+		else
+			echo "Error in table fileds "
+		#break
+		fi
+		sed -i '1d' ./dbs/$db_path/temp.txt
+		done #for loop
+		rm ./dbs/$db_path/temp.txt
+		#replacable line: unum
+
+		#function not yet completed
+		#sed -i 's/"`awk 'NR == '$unum' {print}' ./dbs/$db_path/$tname.txt`"/`echo "$tmpstr"`/' ./dbs/$db_path/$tname.txt
+			  
+	else
+		echo "wrong input, please enter number only"
+		continue
+	fi	
+	
+	while :
+	do
+	read -p "Do you still want to update table ? (y, n): " cont
+	if [[ $cont == "y" ]];then
+			#echo "Adding Another Entery to table: $tname.txt"
+		break
+	elif [[ $cont == "n" ]];then
+			#echo "Exiting insert into table and going back to menu ... "
+		break
+	else 
+		echo "wrong input, please enter y to continue, n to exit "
+		continue
+	fi
+	done #while cont loop 
+	done #else main while
+	echo
+	#break
+fi
+done
+}
+
 
 
 
@@ -478,7 +579,7 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 		;;
 		"6") delete_from_table $INPUT #awk-sed use begins 
 		;;
-		"7") echo "update_table" #awk-sed use begins 
+		"7") update_table $INPUT #awk-sed use begins 
 		;;
 		"back") echo "Exiting to List Database Menu" 
 		break 
