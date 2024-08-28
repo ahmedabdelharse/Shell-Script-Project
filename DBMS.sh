@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#$!!! to do - change space seperation to any character like :, ; or - ###$!@
+
 echo "Starting Database Management System ..." #improve readability
 	sleep 0.2
 	
@@ -237,7 +239,6 @@ elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then
 	echo
 	continue
 else
-	################ Continue from here *
 	cont="y"
 	while [ $cont == "y" ]; #loop to continue viewing enteries
 	do
@@ -255,7 +256,7 @@ else
 		read -p "Enter Row number " rnum
 		if [[ $rnum =~ ^[0-9]+$ ]];then
 			awk 'NR == 1 {print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/temp.txt
-			rnum=$(($rnum+2))
+			rnum=$(($rnum+1))
 			awk 'NR == '$rnum' {print}' ./dbs/$db_path/$tname.txt >> ./dbs/$db_path/temp.txt
 			column -t -s' ' ./dbs/$db_path/temp.txt
 			rm ./dbs/$db_path/temp.txt
@@ -265,7 +266,7 @@ else
 			continue
 		fi
 		done
-	elif [[ $smthd == 3 ]]; then
+	elif [[ $smthd == 3 ]]; then #fix search requires absolute match 
 		echo "Table Columns are : "
 		awk 'NR == 1 {print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g'
 		awk 'NR == 1 {for (i=1;i<=NF;i++) print $i}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/cl_list.txt
@@ -321,6 +322,80 @@ else
 fi
 done
 }
+
+delete_from_table(){
+db_path=$1	
+#Reading table name 
+echo "Selecting from table ... "
+while : 
+do
+read -p "Enter Table name with no extension (enter back to exit): " tname #reading table-name
+# to do -> rethink about tname with or without extension 
+if [[ "$tname" = "back" ]]; then 
+	echo "Back to Main Menu .. "
+	sleep 0.1
+	break #not yet tested
+elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then 
+	echo "Table doesn't exist please Enter another Table name"
+	echo "Available Tables are :" #can be removed for security if wanted
+	ls ./dbs/$db_path/ 	#can be removed for security if wanted
+	echo
+	continue
+else
+	cont="y"
+	while [ $cont == "y" ]; #loop to continue viewing enteries
+	do
+	#tmpstr="" #temp string
+	read -p "Enter Row number to delete (enter "view" to view all Table Rows) ->  " dnum
+	if [[ $dnum == "view" ]]; then
+		echo "Line ->  Table "
+		awk 'NR == 1 {print "   ", $0}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' | column -t -s' '
+		sed -e '1d' ./dbs/$db_path/$tname.txt | awk '{print NR," ->", $0}' | column -t -s' '
+		#sed -e '1,2d' -e '$d' ./dbs/$db_path/$tname.txt | awk '{print NR," ->", $0}' | column -t -s' '
+		echo
+		## continue here ## 
+		#awk '{print}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' > ./dbs/$db_path/temp.txt
+
+		#column -t -s' ' ./dbs/$db_path/temp.txt
+		#rm ./dbs/$db_path/temp.txt
+	elif  [[ $dnum =~ ^[0-9]+$ ]]; then #fix deleting empty lines	
+			dnum=$(($dnum+1))
+			`sed -i ''$dnum'd' ./dbs/$db_path/$tname.txt` 
+			#need to add checks if it'd excuted or error -> 
+		#if [[ `sed -i ''$dnum'd' ./dbs/$db_path/$tname.txt` ]]; then 
+		#	echo "Succesfully deleted Row: $(($dnum-1)) " 
+		#else 
+		#	echo "error at attempting to delete row: $(($dnum-1)) " 
+		#fi
+		  
+	else
+		echo "wrong input, please enter number only"
+		continue
+	fi
+	done
+	
+	while :
+	do
+	read -p "Do you want to delete another Entery ? (y, n): " cont
+	if [[ $cont == "y" ]];then
+	#echo "Adding Another Entery to table: $tname.txt"
+	break
+	elif [[ $cont == "n" ]];then
+	#echo "Exiting insert into table and going back to menu ... "
+	break
+	else 
+	echo "wrong input, please enter y to continue, n to exit "
+	continue
+	fi
+	done #while loop 
+	#echo "Table $tname is succesfully :)" #important -> to do -> add this message as STRDOUT > and one for Error 2>
+	echo
+	#break
+fi
+done
+}
+
+
 
 ###@@@@ Main menu functions @@@@### 
 create_db(){
@@ -401,7 +476,7 @@ elif [[ -d "./dbs/$INPUT" ]]; then
 		;;
 		"5") select_from_table $INPUT #awk-sed use begins 
 		;;
-		"6") echo "delete_from_table" #awk-sed use begins 
+		"6") delete_from_table $INPUT #awk-sed use begins 
 		;;
 		"7") echo "update_table" #awk-sed use begins 
 		;;
