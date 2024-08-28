@@ -415,15 +415,19 @@ elif ! [[ -f "./dbs/$db_path/$tname.txt" ]]; then
 	echo
 	continue
 else
+	echo "Updating Table $tname.txt ..."
 	cont="y"
 	while [ $cont == "y" ]; #loop to continue updating table loop
 	do
 	read -p "Enter Row number to update (enter "view" to view all Table Rows) ->  " unum
-	if [[ $unum == "view" ]]; then
+	if [[ $unum == "back" ]]; then
+		break
+	elif [[ $unum == "view" ]]; then
 		echo "Line ->  Table "
 		awk 'NR == 1 {print "   ", $0}' ./dbs/$db_path/$tname.txt | sed  -E 's/:[is]//g' | column -t -s' '
 		sed -e '1d' ./dbs/$db_path/$tname.txt | awk '{print NR," ->", $0}' | column -t -s' '
 		echo
+		continue
 	elif  [[ $unum =~ ^[0-9]+$ ]]; then #fix deleting empty lines	
 		unum=$(($unum+1))
 		tmpstr="" #temp string
@@ -465,9 +469,11 @@ else
 		done #for loop
 		rm ./dbs/$db_path/temp.txt
 		#replacable line: unum
-
-		#function not yet completed
-		#sed -i 's/"`awk 'NR == '$unum' {print}' ./dbs/$db_path/$tname.txt`"/`echo "$tmpstr"`/' ./dbs/$db_path/$tname.txt
+		echo
+		echo "replacing row:  `awk 'NR == '$unum' {print}' ./dbs/$db_path/$tname.txt`"
+		echo "with row:  $tmpstr"
+		echo
+		sed -i "s/`awk 'NR == '$unum' {print}' ./dbs/$db_path/$tname.txt`/$tmpstr/" ./dbs/$db_path/$tname.txt
 			  
 	else
 		echo "wrong input, please enter number only"
